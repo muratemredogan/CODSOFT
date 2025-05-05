@@ -1,0 +1,30 @@
+from datetime import datetime
+
+print("Merhaba! Ben basit bir chatbot'um. Çıkmak için 'çık' yaz.")
+
+while True:
+    user_input = input("Sen: ").strip().lower()
+    
+    if "merhaba" in user_input or "selam" in user_input:
+        print("Bot: Merhaba! Seni gördüğüme sevindim.")
+    elif "nasılsın" in user_input:
+        print("Bot: Gayet iyiyim, teşekkürler! Sen nasılsın?")
+    elif "saat" in user_input:
+        print(f"Bot: Şu an saat {datetime.now().strftime('%H:%M')}")
+    elif "hava" in user_input:
+        print("Bot: Hava durumunu şu anda bilemiyorum ama umarım güzeldir!")
+    elif "adın" in user_input:
+        print("Bot: Benim adım CodBot. Senin adın ne?")
+    elif "ne yapıyorsun" in user_input:
+        print("Bot: Seninle konuşuyorum  Başka ne yapabilirim ki!")
+    elif "hangi dil" in user_input:
+        print("Bot: Python dilinde yazıldım ")
+    elif "teşekkür" in user_input:
+        print("Bot: Rica ederim! ")
+    elif "görüşürüz" in user_input:
+        print("Bot: Görüşürüz! Kendine iyi bak ")
+    elif user_input == "çık":
+        print("Bot: Hoşça kal! Görüşürüz!")
+        break
+    else:
+        print("Bot: Üzgünüm, seni anlayamadım.")
