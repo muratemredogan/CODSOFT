@@ -1,0 +1,121 @@
+import math
+
+print("X-O Oyununa Hoşgeldin!\n"
+      "Kurallar: Sen hamle yapmak için 1-9 arası bir sayı yazacaksın ve o hücreye 'X' koyacaksın.\n"
+      "Karşıdaki robot ise kendi hamlesinde 'O' koyacak. İyi şanslar!\n")
+
+
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+    print("-" * 10)
+
+def check_winner(board):
+    # Satırlar ve sütunlar
+    for i in range(3):
+        if board[i][0] == board[i][1] == board[i][2] != ' ':
+            return board[i][0]
+        if board[0][i] == board[1][i] == board[2][i] != ' ':
+            return board[0][i]
+    # Çaprazlar
+    if board[0][0] == board[1][1] == board[2][2] != ' ':
+        return board[0][0]
+    if board[0][2] == board[1][1] == board[2][0] != ' ':
+        return board[0][2]
+    return None
+
+def is_full(board):
+    return all(cell != ' ' for row in board for cell in row)
+
+def minimax(board, depth, is_maximizing):
+    winner = check_winner(board)
+    if winner == 'O':
+        return 1
+    elif winner == 'X':
+        return -1
+    elif is_full(board):
+        return 0
+
+    if is_maximizing:
+        best_score = -math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == ' ':
+                    board[i][j] = 'O'
+                    score = minimax(board, depth + 1, False)
+                    board[i][j] = ' '
+                    best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = math.inf
+        for i in range(3):
+            for j in range(3):
+                if board[i][j] == ' ':
+                    board[i][j] = 'X'
+                    score = minimax(board, depth + 1, True)
+                    board[i][j] = ' '
+                    best_score = min(score, best_score)
+        return best_score
+
+def best_move(board):
+    best_score = -math.inf
+    move = None
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == ' ':
+                board[i][j] = 'O'
+                score = minimax(board, 0, False)
+                board[i][j] = ' '
+                if score > best_score:
+                    best_score = score
+                    move = (i, j)
+    return move
+
+# Başlangıç
+board = [[" " for _ in range(3)] for _ in range(3)]
+print("X-O Oyununa Hoşgeldin! Sen 'X'sin, AI 'O'. Hücre numarası: 1-9")
+
+def get_user_move():
+    while True:
+        move = input("Senin hamlen (1-9): ")
+        if not move.isdigit():
+            print("Geçersiz giriş, tekrar dene.")
+            continue
+        move = int(move) - 1
+        if move < 0 or move > 8:
+            print("Geçersiz hücre numarası. 1-9 arası seç.")
+            continue
+        row, col = divmod(move, 3)
+        if board[row][col] != ' ':
+            print("Bu hücre dolu, başka bir yer seç.")
+            continue
+        return row, col
+
+# Oyun döngüsü
+while True:
+    print_board(board)
+
+    # Oyuncu hamlesi
+    row, col = get_user_move()
+    board[row][col] = 'X'
+
+    winner = check_winner(board)
+    if winner or is_full(board):
+        break
+
+    # AI hamlesi
+    print("AI düşünüyor...")
+    move = best_move(board)
+    if move:
+        board[move[0]][move[1]] = 'O'
+
+    winner = check_winner(board)
+    if winner or is_full(board):
+        break
+
+print_board(board)
+if winner:
+    print(f"Kazanan: {winner}")
+else:
+    print("Berabere!")
+print("Oyun bitti.")
