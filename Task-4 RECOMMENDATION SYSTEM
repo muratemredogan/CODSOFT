@@ -1,0 +1,46 @@
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import random
+
+# Genişletilmiş film veri seti
+data = {
+    'title': [
+        'The Matrix', 'John Wick', 'Interstellar', 'Inception', 'The Dark Knight',
+        'Avengers', 'Iron Man', 'Guardians of the Galaxy', 'Doctor Strange', 'Black Panther',
+        'Joker', 'Ford v Ferrari', 'The Prestige', 'Tenet', 'Dunkirk',
+        'Shutter Island', 'Memento', 'The Godfather', 'Pulp Fiction', 'Fight Club'
+    ],
+    'genre': [
+        'sci-fi action', 'action thriller', 'sci-fi drama', 'sci-fi thriller', 'action crime',
+        'action superhero', 'action superhero', 'action comedy', 'fantasy superhero', 'action drama',
+        'crime drama', 'biography drama', 'mystery thriller', 'sci-fi thriller', 'war drama',
+        'mystery thriller', 'mystery thriller', 'crime drama', 'crime drama', 'psychological thriller'
+    ]
+}
+
+df = pd.DataFrame(data)
+
+# Metinleri sayısal vektörlere dönüştür
+cv = CountVectorizer()
+count_matrix = cv.fit_transform(df['genre'])
+
+# Cosine similarity hesapla
+cosine_sim = cosine_similarity(count_matrix)
+
+# Öneri fonksiyonu (rasgele başlangıçlı)
+def recommend_random():
+    title = random.choice(df['title'].tolist())
+    idx = df[df['title'] == title].index[0]
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:3]  # En iyi 2 öneriyi al
+    movie_indices = [i[0] for i in sim_scores]
+    recommendations = df['title'].iloc[movie_indices].tolist()
+    return title, recommendations
+
+# Çalıştırma
+selected_movie, recommendations = recommend_random()
+print(f"\nBugünkü önerimiz: '{selected_movie}' izlediysen şunları da sevebilirsin:")
+for rec in recommendations:
+    print(f"- {rec}")
