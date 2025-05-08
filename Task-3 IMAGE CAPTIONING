@@ -1,0 +1,22 @@
+from transformers import BlipProcessor, BlipForConditionalGeneration
+from PIL import Image
+import requests
+from io import BytesIO
+
+# İnternetten görsel çekme
+url = 'https://image.kanald.com.tr/i/kanald/100/0x0/67a5eef3da10d86907f3aeb8.jpg'
+response = requests.get(url)
+image = Image.open(BytesIO(response.content))
+
+# BLIP modeli
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
+
+# Model inputu
+inputs = processor(images=image, return_tensors="pt")
+
+# Caption oluşturma
+out = model.generate(**inputs)
+caption = processor.decode(out[0], skip_special_tokens=True)
+
+print("Output Caption:", caption)
